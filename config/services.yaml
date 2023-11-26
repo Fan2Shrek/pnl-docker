@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    Pnl\PNLDocker\Command\:
+        resource: '../src/Command'
+
+    Pnl\PNLDocker\Command\StartCommand:
+        arguments:
+            $app: '@Pnl\Application'

@@ -1,0 +1,6 @@
+{
+    "name": "Pnl php",
+    "composer-name": "pnl/pnl-php",
+    "main-class": "Pnl\\PnlDocker\\PNLDocker",
+    "version": "dev-main"
+}

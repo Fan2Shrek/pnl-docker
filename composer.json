@@ -1,0 +1,20 @@
+{
+    "name": "pnl/pnl-docker",
+    "description": "Docker support for pnl",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Pnl\\PnlDocker\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fan2Shrek",
+            "email": "pierre27.ambroise@gmail.com"
+        }
+    ],
+    "require": {
+        "pnl/core": "dev-develop"
+    }
+}
