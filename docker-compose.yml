@@ -3,8 +3,6 @@ services:
     image: php:7.4-fpm
     volumes:
       - ./src:/var/www/html
-    networks:
-      - app-network
     ports:
       - 1664:9000
 
@@ -12,5 +10,3 @@ services:
     image: php:7.4-fpm
     volumes:
       - ./src:/var/www/html
-    networks:
-      - app-network

@@ -7,6 +7,7 @@ use Pnl\App\AbstractCommand;
 use Pnl\Application;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
+use Pnl\PNLDocker\Services\Docker;
 use Pnl\PNLDocker\Services\DockerConfigFactory;
 use Pnl\PNLDocker\Services\DockerContext;
 use Symfony\Component\Yaml\Yaml;
@@ -24,7 +25,8 @@ class StartCommand extends AbstractCommand
 
     public function __construct(
         Application $app,
-        private DockerContext $dockerContext
+        private readonly DockerContext $dockerContext,
+        private readonly Docker $docker,
     )
     {
         $this->currentPath = $app->get('PWD');
@@ -42,6 +44,7 @@ class StartCommand extends AbstractCommand
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
         $this->containerList = $this->dockerContext->getContainersFrom($this->currentPath);
-        dd($this->containerList);
+
+        $this->docker->up();
     }
 }
