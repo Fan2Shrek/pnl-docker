@@ -2,10 +2,13 @@
 
 namespace Pnl\PnlDocker\Command;
 
+use Iterator;
 use Pnl\App\AbstractCommand;
 use Pnl\Application;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
+use Pnl\PNLDocker\Services\DockerConfigFactory;
+use Symfony\Component\Yaml\Yaml;
 
 class StartCommand extends AbstractCommand
 {
@@ -13,7 +16,12 @@ class StartCommand extends AbstractCommand
 
     private string $currentPath;
 
-    public function __construct(Application $app)
+    private array $containerList = [];
+
+    public function __construct(
+        Application $app,
+        private DockerConfigFactory $dockerConfigFactory
+    )
     {
         $this->currentPath = $app->get('PWD');
 
@@ -29,6 +37,37 @@ class StartCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        dd($this->currentPath);
+        foreach (new \DirectoryIterator($this->currentPath) as $fileInfo) {
+            if ($fileInfo->isDot()) {
+                continue;
+            }
+
+            if ($fileInfo->isDir()) {
+                continue;
+            }
+
+            $dockerFiles = [];
+            if (!str_contains($fileInfo->getFilename(), 'docker-compose')) {
+                continue;
+            }
+
+            $dockerFiles[] = $fileInfo->getPathname();
+        }
+
+        $this->readDockerFiles($dockerFiles);
+        dd($this->containerList);
+    }
+
+    private function readDockerFiles(array $dockerFiles): void
+    {
+        foreach ($dockerFiles as $dockerFile) {
+            $dockerFileContent = Yaml::parseFile($dockerFile);
+
+            if (null === $dockerFileContent || !isset($dockerFileContent['services'])) {
+                continue;
+            }
+
+            $this->containerList[] = $this->dockerConfigFactory->createFromArray($dockerFileContent['services']);
+        }
     }
 }

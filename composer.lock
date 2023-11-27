@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d3c6d25f104428d2835b577cac09465",
+    "content-hash": "00ffa6c56a7856ee45349289793fd77c",
     "packages": [
         {
             "name": "pnl/core",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Fan2Shrek/pnl-core.git",
-                "reference": "9b5531b286d11f7a9880efca01c523caf54cfdf4"
+                "reference": "b75591ab9e69f85ad910ac0b4bbee29caadd6621"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Fan2Shrek/pnl-core/zipball/9b5531b286d11f7a9880efca01c523caf54cfdf4",
-                "reference": "9b5531b286d11f7a9880efca01c523caf54cfdf4",
+                "url": "https://api.github.com/repos/Fan2Shrek/pnl-core/zipball/b75591ab9e69f85ad910ac0b4bbee29caadd6621",
+                "reference": "b75591ab9e69f85ad910ac0b4bbee29caadd6621",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 "issues": "https://github.com/Fan2Shrek/pnl-core/issues",
                 "source": "https://github.com/Fan2Shrek/pnl-core/tree/develop"
             },
-            "time": "2023-11-26T20:38:59+00:00"
+            "time": "2023-11-26T21:42:30+00:00"
         },
         {
             "name": "psr/container",
@@ -876,5 +876,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

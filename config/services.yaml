@@ -10,3 +10,6 @@ services:
     Pnl\PNLDocker\Command\StartCommand:
         arguments:
             $app: '@Pnl\Application'
+
+    Pnl\PNLDocker\Services\:
+        resource: '../src/Services'
