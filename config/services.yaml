@@ -13,3 +13,10 @@ services:
 
     Pnl\PNLDocker\Services\:
         resource: '../src/Services'
+
+    Pnl\PNLDocker\EventSubscriber\:
+        resource: '../src/EventSubscriber'
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
+    Symfony\Component\EventDispatcher\EventDispatcher:

@@ -2,24 +2,31 @@
 
 namespace Pnl\PNLDocker\Services;
 
+use Pnl\PNLDocker\Event\DockerUpEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 class Docker
 {
     private string $dockerExec;
 
-    public function __construct(?string $dockerExec = null)
+    public function __construct(
+        private readonly EventDispatcher $eventDispatcher,
+        ?string $dockerExec = null,
+    )
     {
         $this->dockerExec = $dockerExec ?? $this->findDockerExec();;
     }
 
-    public function up(bool $detach = true): void
+    public function up(string $currentPath, bool $detach = true): void
     {
         $this->executeCommand('up', ['detach' => $detach]);
+        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath));
     }
 
     private function executeCommand(string $command, array $arg = [], bool $silent = false): void
     {
         $realCommand = sprintf(
-            '%s %s %s %s %s',
+            '%s \'%s\' %s %s %s',
             $silent ? 'nohup' : '',
             $this->dockerExec,
             $command,
@@ -32,8 +39,7 @@ class Docker
 
     private function doExecute(string $command): void
     {
-        $output = [];
-        exec($command, $output);
+        exec($command);
     }
 
     private function parseArg(array $args = []): string

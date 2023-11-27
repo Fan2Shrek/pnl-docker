@@ -3,6 +3,7 @@
 namespace PNL\PNLDocker;
 
 use Pnl\Extensions\AbstractExtension;
+use Pnl\PNLDocker\DependencyInjection\EventSubscriberCompiler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
