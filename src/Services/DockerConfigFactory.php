@@ -21,7 +21,7 @@ class DockerConfigFactory
     {
         $dockerConfigObjects = [];
         foreach ($dockerConfigs as $name => $dockerConfig) {
-            $dockerConfigObjects[] = $this->create(
+            $dockerConfigObjects[$name] = $this->create(
                 $name,
                 $dockerConfig['image'],
                 $this->convertPorts($dockerConfig['ports'] ?? []),
