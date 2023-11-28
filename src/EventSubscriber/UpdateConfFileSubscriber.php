@@ -29,7 +29,9 @@ class UpdateConfFileSubscriber implements EventSubscriberInterface
     public function onStart(DockerUpEvent $event): void
     {
         $dockerConfig = $this->dockerContext->getContainersFrom($event->getPath());
-        $content = $this->virtualDumper->dump([$event->getPath() => $dockerConfig]);
+        $fullConfig = require PNLDocker::getRegistrationFile();
+        $fullConfig[$event->getPath()] = $dockerConfig;
+        $content = $this->virtualDumper->dump($fullConfig);
 
         $file = fopen(PNLDocker::getRegistrationFile(), 'w');
 
