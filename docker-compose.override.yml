@@ -2,6 +2,7 @@ services:
   php:
     ports:
       - 1670:9000
+      - 1689:9000
 
   consumer:
     ports:

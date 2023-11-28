@@ -11,13 +11,13 @@ class VirtualDumper implements VirtualDumperInterface
         return true;
     }
 
-    public function dump(mixed $data): string
+    public function dump(mixed $data, int $indent = 1): string
     {
         $dump = '';
 
         foreach ($this->dumpers as $dumper) {
             if ($dumper->supports($data)) {
-                $dump .= $dumper->dump($data);
+                $dump .= $dumper->dump($data, $indent);
             }
         }
 

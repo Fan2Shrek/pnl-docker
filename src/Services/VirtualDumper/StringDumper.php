@@ -11,8 +11,8 @@ class StringDumper implements VirtualDumperAwareInterface
         return is_string($data);
     }
 
-    public function dump(mixed $data): string
+    public function dump(mixed $data, int $indent = 1): string
     {
-        return sprintf("'%s'", $data);
+        return sprintf("%s'%s'", str_repeat("\t", 0), $data);
     }
 }

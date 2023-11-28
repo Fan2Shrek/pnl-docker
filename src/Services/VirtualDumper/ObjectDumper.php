@@ -11,9 +11,9 @@ class ObjectDumper implements VirtualDumperAwareInterface
         return is_object($data);
     }
 
-    public function dump(mixed $data): string
+    public function dump(mixed $data, int $indent = 1): string
     {
-        $dump = '[';
+        $dump = "[\n";
 
         $reflection = new \ReflectionClass($data);
 
@@ -21,11 +21,16 @@ class ObjectDumper implements VirtualDumperAwareInterface
             $methodName = sprintf('get%s', ucfirst($property->getName()));
             if ($reflection->hasMethod($methodName)) {
                 $value = $data->$methodName();
-                $dump .= sprintf("\t'%s' => %s,\n", $property->getName(), $this->virtualDumper->dump($value));
+                $dump .= sprintf(
+                    "%s'%s' => %s,\n",
+                    str_repeat("\t", $indent),
+                    $property->getName(),
+                    $this->virtualDumper->dump($value, $indent + 1)
+                );
             }
         }
 
-        $dump .= ']';
+        $dump .= str_repeat("\t", $indent - 1) . ']';
 
         return $dump;
     }

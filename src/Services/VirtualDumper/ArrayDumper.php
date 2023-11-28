@@ -11,15 +11,20 @@ class ArrayDumper implements VirtualDumperAwareInterface
         return is_array($data);
     }
 
-    public function dump(mixed $data): string
+    public function dump(mixed $data, int $indent = 1): string
     {
         $dump = "[\n";
 
         foreach ($data as $key => $value) {
-            $dump .= sprintf("\t'%s' => %s,\n", $key, $this->virtualDumper->dump($value));
+            $dump .= sprintf(
+                "%s'%s' => %s,\n",
+                str_repeat("\t", $indent),
+                $key,
+                $this->virtualDumper->dump($value, $indent + 1)
+            );
         }
 
-        $dump .= "]";
+        $dump .= str_repeat("\t", $indent - 1) . ']';
 
         return $dump;
     }

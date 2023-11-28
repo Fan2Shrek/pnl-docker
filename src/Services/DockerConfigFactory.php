@@ -67,7 +67,7 @@ class DockerConfigFactory
         $convertedPorts = [];
         foreach ($ports as $port) {
             [$hostPort, $containerPort] = explode(':', $port);
-            $convertedPorts[$containerPort] = [$hostPort];
+            $convertedPorts[$containerPort][] = $hostPort;
         }
 
         return $convertedPorts;
