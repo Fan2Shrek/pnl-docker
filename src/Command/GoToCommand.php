@@ -5,6 +5,7 @@ namespace Pnl\PNLDocker\Command;
 use PNL\PNLDocker\PNLDocker;
 use Pnl\App\AbstractCommand;
 use Pnl\Console\Input\ArgumentBag;
+use Pnl\Console\Input\ArgumentType;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
 use Pnl\PNLDocker\Services\DockerRegistryLoader;
@@ -25,6 +26,7 @@ class GoToCommand extends AbstractCommand
         $arg = new ArgumentBag();
 
         $arg->add('project', true, nameless: true);
+        $arg->add('image', false, 'Images to get', ArgumentType::STRING, 'nginx');
 
         return $arg;
     }
@@ -70,10 +72,17 @@ class GoToCommand extends AbstractCommand
 
         $bag = $this->currentConfig[$dir];
 
-        $containers = $bag->getImages('nginx');
+        $containers = $bag->getImages($input->get('image'));
+
+        if (empty($containers)) {
+            throw new \Exception(sprintf('No container found for image %s', $input->get('image')));
+        }
+
         foreach ($containers as $container) {
             $output->writeln(sprintf(' - %s : %s', $container->getContainerName(), $this->convertPort($container->getPorts())));
         }
+
+        $output->writeln('');
     }
 
     private function convertPort(array $port): string
