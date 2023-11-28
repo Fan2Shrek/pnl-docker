@@ -9,6 +9,8 @@ use Pnl\Console\Input\ArgumentType;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
 use Pnl\PNLDocker\Services\DockerRegistryLoader;
+use Pnl\PNLDocker\Services\Docker\Docker;
+use Pnl\PNLDocker\Services\Docker\DockerClient;
 
 class GoToCommand extends AbstractCommand
 {
@@ -17,7 +19,8 @@ class GoToCommand extends AbstractCommand
     private array $currentConfig = [];
 
     public function __construct(
-        private readonly DockerRegistryLoader $dockerRegistryLoader
+        private readonly DockerRegistryLoader $dockerRegistryLoader,
+        private Docker $dockerClient,
     ) {
     }
 
@@ -38,6 +41,7 @@ class GoToCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
+        dd($this->dockerClient->getContainers());
         $this->currentConfig = $this->dockerRegistryLoader->load(PNLDocker::getRegistrationFile(), true);
 
         if (!$input->haveNameless()) {
