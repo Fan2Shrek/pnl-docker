@@ -23,7 +23,7 @@ class DockerConfigFactory
         foreach ($dockerConfigs as $name => $dockerConfig) {
             $dockerConfigObjects[$name] = $this->create(
                 $name,
-                $dockerConfig['image'],
+                $dockerConfig['image'] ?? '',
                 $this->convertPorts($dockerConfig['ports'] ?? []),
             );
         }
@@ -31,12 +31,23 @@ class DockerConfigFactory
         return $dockerConfigObjects;
     }
 
+    public function update(DockerConfig $dockerConfig, ?DockerConfig $oldDockerConfig): DockerConfig
+    {
+        if (null === $oldDockerConfig) {
+            return $dockerConfig;
+        }
+
+        $dockerConfig->addPorts($oldDockerConfig->getPorts());
+
+        return $dockerConfig;
+    }
+
     private function convertPorts(array $ports): array
     {
         $convertedPorts = [];
         foreach ($ports as $port) {
             [$hostPort, $containerPort] = explode(':', $port);
-            $convertedPorts[$containerPort] = $hostPort;
+            $convertedPorts[$containerPort] = [$hostPort];
         }
 
         return $convertedPorts;

@@ -17,6 +17,7 @@ class DockerContext
      */
     public function getContainersFrom(string $path): array
     {
+        $dockerFiles = [];
         foreach (new \DirectoryIterator($path) as $fileInfo) {
             if ($fileInfo->isDot()) {
                 continue;
@@ -26,7 +27,6 @@ class DockerContext
                 continue;
             }
 
-            $dockerFiles = [];
             if (!str_contains($fileInfo->getFilename(), 'docker-compose')) {
                 continue;
             }
@@ -51,7 +51,15 @@ class DockerContext
                 continue;
             }
 
-            $dockerList[] = $this->dockerConfigFactory->createFromArray($dockerFileContent['services']);
+            $dockerList = array_reduce(
+                $this->dockerConfigFactory->createFromArray($dockerFileContent['services']),
+                function ($carry, $item) {
+                    $carry[$item->getContainerName()] = $this->dockerConfigFactory->update($item, $carry[$item->getContainerName()] ?? null);
+
+                    return $carry;
+                },
+                $dockerList
+            );
         }
 
         return $dockerList;
