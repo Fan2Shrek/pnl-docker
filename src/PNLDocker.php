@@ -23,6 +23,8 @@ class PNLDocker extends AbstractExtension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
         $loader->load('services.yaml');
+
+        $container->addCompilerPass(new EventSubscriberCompiler());
     }
 
     public static function getRegistrationFile(): string

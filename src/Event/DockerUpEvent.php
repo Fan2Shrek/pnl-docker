@@ -13,4 +13,14 @@ class DockerUpEvent extends Event
         private array $containers = [],
     ) {
     }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    public function getContainers(): array
+    {
+        return $this->containers;
+    }
 }

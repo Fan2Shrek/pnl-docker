@@ -19,8 +19,8 @@ class Docker
 
     public function up(string $currentPath, bool $detach = true): void
     {
+        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath), DockerUpEvent::NAME);
         $this->executeCommand('up', ['detach' => $detach]);
-        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath));
     }
 
     private function executeCommand(string $command, array $arg = [], bool $silent = false): void
