@@ -32,6 +32,11 @@ class DockerConfig
         return $this->isRunning;
     }
 
+    public function start(): void
+    {
+        $this->isRunning = true;
+    }
+
     public function addPorts(array $ports): void
     {
         foreach ($ports as $containerPort => $hostport) {

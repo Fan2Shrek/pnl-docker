@@ -41,7 +41,6 @@ class GoToCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        dd($this->dockerClient->getContainers());
         $this->currentConfig = $this->dockerRegistryLoader->load(PNLDocker::getRegistrationFile(), true);
 
         if (!$input->haveNameless()) {

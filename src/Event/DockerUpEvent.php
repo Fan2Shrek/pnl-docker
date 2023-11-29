@@ -8,10 +8,16 @@ class DockerUpEvent extends Event
 {
     public const NAME = DockerEvent::UP->value;
 
+    private array $containers = [];
+
     public function __construct(
         private string $path,
-        private array $containers = [],
+        array $containers = [],
     ) {
+        foreach ($containers as $container) {
+            $container->start();
+        }
+        $this->containers = $containers;
     }
 
     public function getPath(): string

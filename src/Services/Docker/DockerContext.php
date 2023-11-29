@@ -1,14 +1,18 @@
 <?php
 
-namespace Pnl\PNLDocker\Services;
+namespace Pnl\PNLDocker\Services\Docker;
 
 use Pnl\PNLDocker\Docker\DockerConfig;
+use Pnl\PNLDocker\Services\Docker\Factory\DockerFileConfigFactory;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Create a docker context from a docker-compose file
+ */
 class DockerContext
 {
     public function __construct(
-        private DockerConfigFactory $dockerConfigFactory
+        private DockerFileConfigFactory $dockerFileConfigFactory
     ) {
     }
 
@@ -51,17 +55,21 @@ class DockerContext
                 continue;
             }
 
-            $dockerList = array_reduce(
-                $this->dockerConfigFactory->createFromArray($dockerFileContent['services']),
-                function ($carry, $item) {
-                    $carry[$item->getContainerName()] = $this->dockerConfigFactory->update($item, $carry[$item->getContainerName()] ?? null);
-
-                    return $carry;
-                },
-                $dockerList
-            );
+            foreach ($dockerFileContent['services'] as $containerName => $container) {
+                if (!isset($dockerList[$containerName])) {
+                    $dockerList[$containerName] = [
+                        'name' => $containerName,
+                        'image' => $container['image'],
+                        'ports' => $container['ports'] ?? []
+                    ];
+                } else {
+                    foreach ($container as $key => $value) {
+                        $dockerList[$containerName][$key] = array_merge($value, $dockerList[$containerName][$key]);
+                    }
+                }
+            }
         }
 
-        return $dockerList;
+        return $this->dockerFileConfigFactory->createFromArray($dockerList);
     }
 }

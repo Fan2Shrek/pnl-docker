@@ -3,6 +3,7 @@
 namespace Pnl\PNLDocker\Services\Docker;
 
 use Pnl\PNLDocker\Event\DockerReadEvent;
+use Pnl\PNLDocker\Services\Docker\Factory\DockerConfigFactory;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Docker
@@ -17,7 +18,6 @@ class Docker
     public function getContainers(): array
     {
         $result = $this->dockerClient->getContainers();
-        dd($result);
         $containers = [$this->dockerConfigFactory->createFromArray($result)];
 
         $this->eventDispatcher->dispatch(new DockerReadEvent($containers));
