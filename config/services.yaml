@@ -10,3 +10,17 @@ services:
     Pnl\PNLDocker\Command\StartCommand:
         arguments:
             $app: '@Pnl\Application'
+
+    Pnl\PNLDocker\Services\:
+        resource: '../src/Services'
+
+    Pnl\PNLDocker\Services\VirtualDumper\:
+        resource: '../src/Services/VirtualDumper'
+        tags: ['pnl.pnl_docker.virtual_dumper']
+
+    Pnl\PNLDocker\EventSubscriber\:
+        resource: '../src/EventSubscriber'
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
+    Symfony\Component\EventDispatcher\EventDispatcher:

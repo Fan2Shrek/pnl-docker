@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Pnl\\PnlDocker\\": "src/"
+            "Pnl\\PNLDocker\\": "src/"
         }
     },
     "authors": [
@@ -15,6 +15,8 @@
         }
     ],
     "require": {
-        "pnl/core": "dev-develop"
+        "pnl/core": "dev-develop",
+        "symfony/yaml": "^6.3",
+        "symfony/event-dispatcher": "^6.3"
     }
 }

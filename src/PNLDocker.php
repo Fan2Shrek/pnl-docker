@@ -3,6 +3,8 @@
 namespace PNL\PNLDocker;
 
 use Pnl\Extensions\AbstractExtension;
+use Pnl\PNLDocker\DependencyInjection\EventSubscriberCompiler;
+use Pnl\PNLDocker\DependencyInjection\VirtualDumperCompiler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -11,7 +13,7 @@ class PNLDocker extends AbstractExtension
 {
     protected static string $name = "docker";
 
-    private const REGISTRATION_FILE = __DIR__ . '/../config/registration.yaml';
+    private const REGISTRATION_FILE = __DIR__ . '/../config/registration.php';
 
     public function getCommandTag(): string
     {
@@ -22,6 +24,9 @@ class PNLDocker extends AbstractExtension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
         $loader->load('services.yaml');
+
+        $container->addCompilerPass(new EventSubscriberCompiler());
+        $container->addCompilerPass(new VirtualDumperCompiler());
     }
 
     public static function getRegistrationFile(): string

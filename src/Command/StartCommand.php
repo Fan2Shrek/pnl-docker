@@ -2,10 +2,13 @@
 
 namespace Pnl\PnlDocker\Command;
 
+use Iterator;
 use Pnl\App\AbstractCommand;
 use Pnl\Application;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
+use Pnl\PNLDocker\Services\DockerCommand;
+use Pnl\PNLDocker\Services\Docker\DockerContext;
 
 class StartCommand extends AbstractCommand
 {
@@ -13,7 +16,11 @@ class StartCommand extends AbstractCommand
 
     private string $currentPath;
 
-    public function __construct(Application $app)
+    public function __construct(
+        Application $app,
+        private readonly DockerContext $dockerContext,
+        private readonly DockerCommand $dockerCommand
+    )
     {
         $this->currentPath = $app->get('PWD');
 
@@ -29,6 +36,6 @@ class StartCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        dd($this->currentPath);
+        $this->dockerCommand->up($this->currentPath);
     }
 }
