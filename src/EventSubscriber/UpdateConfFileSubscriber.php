@@ -23,6 +23,7 @@ class UpdateConfFileSubscriber implements EventSubscriberInterface
     {
         return [
             DockerEvent::UP->value => 'onStart',
+            DockerEvent::UP->value => 'onStart',
         ];
     }
 
