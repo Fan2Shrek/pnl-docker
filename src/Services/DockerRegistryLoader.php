@@ -7,7 +7,6 @@ use Pnl\PNLDocker\Docker\DockerConfigBag;
 class DockerRegistryLoader
 {
     public function __construct(
-        private readonly DockerConfigFactory $dockerConfigFactory,
     ) {
     }
 
@@ -15,14 +14,13 @@ class DockerRegistryLoader
     {
         $registry = require $path;
 
-        $loadedRegistry = [];
-
-        foreach ($registry as $project => $dockerConfig) {
-            if ($asConfigBag) {
-                $loadedRegistry[$project] = $this->dockerConfigFactory->createDockerBag($dockerConfig);
-                continue;
+        if ($asConfigBag) {
+            foreach ($registry as $dir => $dockerConfigs) {
+                $loadedRegistry[$dir] = new DockerConfigBag();
+                foreach ($dockerConfigs as $dockerConfig) {
+                    $loadedRegistry[$dir]->addContainer($dockerConfig);
+                }
             }
-            $loadedRegistry[$project] = $this->dockerConfigFactory->createFromArray($dockerConfig);
         }
 
         return $loadedRegistry;

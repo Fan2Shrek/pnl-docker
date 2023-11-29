@@ -8,6 +8,7 @@ class DockerConfig
         private string $containerName,
         private string $image,
         private array $ports,
+        private bool $isRunning = false,
     ) {
     }
 
@@ -24,6 +25,16 @@ class DockerConfig
     public function getPorts(): array
     {
         return $this->ports;
+    }
+
+    public function isRunning(): bool
+    {
+        return $this->isRunning;
+    }
+
+    public function start(): void
+    {
+        $this->isRunning = true;
     }
 
     public function addPorts(array $ports): void

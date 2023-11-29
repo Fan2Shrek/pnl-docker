@@ -3,23 +3,26 @@
 namespace Pnl\PNLDocker\Services;
 
 use Pnl\PNLDocker\Event\DockerUpEvent;
+use Pnl\PNLDocker\Services\Docker\DockerContext;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class Docker
+class DockerCommand
 {
     private string $dockerExec;
 
     public function __construct(
         private readonly EventDispatcher $eventDispatcher,
+        private readonly DockerContext $dockerContext,
         ?string $dockerExec = null,
-    )
-    {
+    ) {
         $this->dockerExec = $dockerExec ?? $this->findDockerExec();;
     }
 
     public function up(string $currentPath, bool $detach = true): void
     {
-        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath), DockerUpEvent::NAME);
+        $containers = $this->dockerContext->getContainersFrom($currentPath);
+
+        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath, $containers), DockerUpEvent::NAME);
         $this->executeCommand('up', ['detach' => $detach]);
     }
 
