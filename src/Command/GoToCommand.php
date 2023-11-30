@@ -92,8 +92,8 @@ class GoToCommand extends AbstractCommand
     {
         $urls = '';
 
-        foreach ($port as $container => $host) {
-            $urls .= array_reduce($host, fn ($carry, $item) => $carry . sprintf("http://locahost:%d \t", $item), '');
+        foreach ($port as $host) {
+            $urls .= sprintf("http://locahost:%d \t", $host['PublicPort']);
         }
 
         return $urls;
