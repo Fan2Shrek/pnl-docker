@@ -47,6 +47,7 @@ class DockerContext
     private function readDockerFiles(array $dockerFiles): array
     {
         $dockerList = [];
+        rsort($dockerFiles);
 
         foreach ($dockerFiles as $dockerFile) {
             $dockerFileContent = Yaml::parseFile($dockerFile);
