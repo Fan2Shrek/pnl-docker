@@ -8,7 +8,7 @@ use Pnl\Console\Input\ArgumentBag;
 use Pnl\Console\Input\ArgumentType;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
-use Pnl\PNLDocker\Services\DockerRegistryLoader;
+use Pnl\PNLDocker\Services\DockerRegistryManager;
 use Pnl\PNLDocker\Services\Docker\Docker;
 
 class GoToCommand extends AbstractCommand
@@ -18,7 +18,7 @@ class GoToCommand extends AbstractCommand
     private array $currentConfig = [];
 
     public function __construct(
-        private readonly DockerRegistryLoader $dockerRegistryLoader,
+        private readonly DockerRegistryManager $dockerRegistryLoader,
         private Docker $docker,
     ) {
     }
@@ -40,9 +40,7 @@ class GoToCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        $this->docker->getContainers(true);
-
-        $this->currentConfig = $this->dockerRegistryLoader->load(PNLDocker::getRegistrationFile());
+        $this->currentConfig = $this->dockerRegistryLoader->get();
 
         if (!$input->haveNameless()) {
             throw new \Exception('You must provide a project name');

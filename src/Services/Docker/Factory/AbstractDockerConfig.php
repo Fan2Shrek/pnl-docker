@@ -7,9 +7,10 @@ use Pnl\PNLDocker\Docker\DockerConfigBag;
 
 abstract class AbstractDockerConfig implements DockerFactoryInterface
 {
-    public function create(string $containerName, string $image, array $ports = [], bool $isRunning = false): DockerConfig
+    public function create(string $id, string $containerName, string $image, array $ports = [], bool $isRunning = false): DockerConfig
     {
         $dockerConfig = new DockerConfig(
+            $id,
             $containerName,
             $image,
             $ports,

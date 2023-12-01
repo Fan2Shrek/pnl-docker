@@ -5,11 +5,17 @@ namespace Pnl\PNLDocker\Docker;
 class DockerConfig
 {
     public function __construct(
+        private string $id,
         private string $containerName,
         private string $image,
         private array $ports,
         private bool $isRunning = false,
     ) {
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getContainerName(): string

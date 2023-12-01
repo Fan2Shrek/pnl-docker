@@ -2,9 +2,6 @@
 
 namespace Pnl\PNLDocker\Services\Docker\Factory;
 
-use Pnl\PNLDocker\Docker\DockerConfig;
-use Pnl\PNLDocker\Docker\DockerConfigBag;
-
 class DockerConfigFactory extends AbstractDockerConfig
 {
     public function createFromArray(array $dockerConfigs): array
@@ -12,6 +9,7 @@ class DockerConfigFactory extends AbstractDockerConfig
         $dockerConfigObjects = [];
         foreach ($dockerConfigs as $dockerConfig) {
             $dockerConfigObjects[$dockerConfig['Names'][0]] = $this->create(
+                $dockerConfig['Id'],
                 $dockerConfig['Names'][0],
                 $dockerConfig['Image'] ?? '',
                 $this->convertPorts($dockerConfig['Ports']),

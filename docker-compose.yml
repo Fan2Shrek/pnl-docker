@@ -16,3 +16,7 @@ services:
     ports:
       - 8050:80
       - 7777:80
+
+networks:
+  default:
+    name: my-network

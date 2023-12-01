@@ -3,6 +3,8 @@
 namespace Pnl\PNLDocker\Services;
 
 use Pnl\PNLDocker\Event\DockerUpEvent;
+use Pnl\PNLDocker\Services\DockerRegistryManager;
+use Pnl\PNLDocker\Services\Docker\Docker;
 use Pnl\PNLDocker\Services\Docker\DockerContext;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -13,17 +15,29 @@ class DockerCommand
     public function __construct(
         private readonly EventDispatcher $eventDispatcher,
         private readonly DockerContext $dockerContext,
+        private readonly Docker $docker,
+        private readonly DockerRegistryManager $dockerRegistryManager,
         ?string $dockerExec = null,
     ) {
         $this->dockerExec = $dockerExec ?? $this->findDockerExec();;
     }
 
-    public function up(string $currentPath, bool $detach = true): void
+    public function up(string $currentPath, bool $detach = true, string $method = 'shy'): void
     {
-        $containers = $this->dockerContext->getContainersFrom($currentPath);
+        $this->docker->getContainers(true);
+        $bag = $this->dockerRegistryManager->getBagFrom($currentPath);
 
-        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath, $containers), DockerUpEvent::NAME);
-        $this->executeCommand('up', ['detach' => $detach]);
+        switch ($method) {
+            case 'force':
+                $this->docker->forceStart($bag->getContainers());
+                break;
+            case 'shy':
+                $this->executeCommand('up', ['detach' => $detach]);
+                break;
+            default:
+                throw new \RuntimeException(sprintf('Method %s not supported', $method));
+        }
+        $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath, $bag->getContainers()), DockerUpEvent::NAME);
     }
 
     private function executeCommand(string $command, array $arg = [], bool $silent = false): void

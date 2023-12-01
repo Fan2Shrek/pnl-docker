@@ -16,6 +16,16 @@ class Docker
     ) {
     }
 
+    public function forceStart(array $containers): void
+    {
+        foreach ($containers as $container) {
+            /**
+             * @todo close container running on port
+             */
+            $this->dockerClient->start($container->getId());
+        }
+    }
+
     public function getContainers(bool $asDockerBag = false): array
     {
         if ($asDockerBag) {

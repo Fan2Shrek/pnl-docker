@@ -4,7 +4,7 @@ namespace Pnl\PNLDocker\Services\Docker;
 
 class DockerClient
 {
-    public function request(string $path, array $param = []): string
+    public function request(string $path, string $method = 'GET', array $param = []): string
     {
         $socket = '/var/run/docker.sock';
 
@@ -14,10 +14,11 @@ class DockerClient
             CURLOPT_UNIX_SOCKET_PATH => $socket,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_BUFFERSIZE => 256,
-            CURLOPT_TIMEOUT => 1000000
+            CURLOPT_TIMEOUT => 1000000,
+            CURLOPT_CUSTOMREQUEST => $method,
         ]);
 
-        curl_setopt($ch, CURLOPT_URL, sprintf("http:/localhost/%s?%s", $path, http_build_query($param)));
+        curl_setopt($ch, CURLOPT_URL, sprintf("http:/localhost/%s%s%s", $path, empty($param) ? '' : '?', http_build_query($param)));
         $response = curl_exec($ch);
 
         curl_close($ch);
@@ -27,8 +28,13 @@ class DockerClient
 
     public function getContainers(): array
     {
-        $response = $this->request('containers/json', ['all' => true]);
+        $response = $this->request('containers/json', 'GET', ['all' => true]);
 
         return json_decode($response, true);
+    }
+
+    public function start(string $container): void
+    {
+        $this->request(sprintf('containers/%s/start', $container), 'POST');
     }
 }
