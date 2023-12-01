@@ -26,6 +26,7 @@ class DockerCommand
 
     public function up(string $currentPath, bool $detach = true, string $method = 'shy'): void
     {
+        /** Refresh all container from registry */
         $this->docker->getContainers(true);
         $isKnow = true;
         $bag = $this->dockerRegistryManager->getBagFrom($currentPath);

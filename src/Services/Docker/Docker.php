@@ -2,17 +2,17 @@
 
 namespace Pnl\PNLDocker\Services\Docker;
 
-use Pnl\PNLDocker\Docker\DockerConfig;
+use Pnl\PNLDocker\Docker\Container;
 use Pnl\PNLDocker\Docker\DockerConfigBag;
 use Pnl\PNLDocker\Event\DockerReadEvent;
-use Pnl\PNLDocker\Services\Docker\Factory\DockerConfigFactory;
+use Pnl\PNLDocker\Services\Docker\Factory\ContainerFactory;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Docker
 {
     public function __construct(
         private readonly DockerClient $dockerClient,
-        private readonly DockerConfigFactory $dockerConfigFactory,
+        private readonly ContainerFactory $dockerConfigFactory,
         private readonly EventDispatcher $eventDispatcher,
     ) {
     }

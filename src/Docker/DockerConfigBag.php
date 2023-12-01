@@ -11,12 +11,12 @@ class DockerConfigBag
         $this->containers = $containers;
     }
 
-    public function addContainer(DockerConfig $dockerConfig): void
+    public function addContainer(Container $container): void
     {
-        $this->containers[$dockerConfig->getContainerName()] = $dockerConfig;
+        $this->containers[$container->getContainerName()] = $container;
     }
 
-    public function getContainer(string $containerName): DockerConfig
+    public function getContainer(string $containerName): Container
     {
         return $this->containers[$containerName];
     }
@@ -30,7 +30,7 @@ class DockerConfigBag
     {
         return array_filter(
             $this->containers,
-            fn (DockerConfig $dockerConfig) => str_contains($dockerConfig->getImage(), $image)
+            fn (Container $container) => str_contains($container->getImage(), $image)
         );
     }
 }

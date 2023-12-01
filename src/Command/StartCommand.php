@@ -9,7 +9,6 @@ use Pnl\Console\Input\ArgumentType;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
 use Pnl\PNLDocker\Services\DockerCommand;
-use Pnl\PNLDocker\Services\Docker\DockerContext;
 
 class StartCommand extends AbstractCommand
 {
@@ -19,7 +18,6 @@ class StartCommand extends AbstractCommand
 
     public function __construct(
         Application $app,
-        private readonly DockerContext $dockerContext,
         private readonly DockerCommand $dockerCommand,
     )
     {

@@ -2,7 +2,7 @@
 
 namespace Pnl\PNLDocker\Docker;
 
-class DockerConfig
+class Container
 {
     public function __construct(
         private string $id,

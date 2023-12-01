@@ -2,7 +2,7 @@
 
 namespace Pnl\PNLDocker\Services\Docker\Factory;
 
-class DockerConfigFactory extends AbstractDockerConfig
+class ContainerFactory extends AbstractDockerConfig
 {
     public function createFromArray(array $dockerConfigs): array
     {
