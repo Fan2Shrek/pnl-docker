@@ -2,6 +2,7 @@
 
 namespace Pnl\PNLDocker\Services\Docker;
 
+use Pnl\PNLDocker\Docker\DockerConfigBag;
 use Pnl\PNLDocker\Event\DockerReadEvent;
 use Pnl\PNLDocker\Services\Docker\Factory\DockerConfigFactory;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -15,29 +16,49 @@ class Docker
     ) {
     }
 
-    public function getContainers(): array
+    public function getContainers(bool $asDockerBag = false): array
     {
-        $result = $this->dockerClient->getContainers();
-        $containers = [$this->dockerConfigFactory->createFromArray($result)];
+        if ($asDockerBag) {
+            $bags = $this->getDockerBags();
 
-        $this->eventDispatcher->dispatch(new DockerReadEvent($containers));
+            $this->eventDispatcher->dispatch(new DockerReadEvent($bags), DockerReadEvent::NAME);
+
+            return $bags;
+        }
+
+        $containers = [$this->dockerConfigFactory->createFromArray($this->fetchContainer())];
+
+        $this->eventDispatcher->dispatch(new DockerReadEvent($containers), DockerReadEvent::NAME);
 
         return $containers;
     }
 
     public function getDockerBags(): array
     {
-        $containers = $this->getContainers();
+        $containers = $this->fetchContainer();
 
         $dockerBags = [];
         foreach ($containers as $container) {
-            if (isset($dockerBags[$container['Labels']['com.docker.compose.project']])) {
-                $dockerBags[$container->getPath()]->addContainer($container);
+            if (!isset($container['Labels']['com.docker.compose.project.working_dir'])) {
+                $dockerBags[] = $this->dockerConfigFactory->createFromArray([$container]);
+
                 continue;
             }
-            $dockerBags[$container->getPath()] = $this->dockerConfigFactory->createDockerBag($container->getContainers());
+
+            $projectPath = $container['Labels']['com.docker.compose.project.working_dir'];
+            if (!isset($dockerBags[$projectPath])) {
+                $dockerBags[$projectPath] = new DockerConfigBag();
+            }
+
+            $dockerConfig = $this->dockerConfigFactory->createFromArray([$container]);
+            $dockerBags[$projectPath]->addContainer(...array_values($dockerConfig));
         }
 
         return $dockerBags;
+    }
+
+    private function fetchContainer(): array
+    {
+        return $this->dockerClient->getContainers();
     }
 }

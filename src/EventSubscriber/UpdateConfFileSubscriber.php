@@ -4,6 +4,7 @@ namespace Pnl\PNLDocker\EventSubscriber;
 
 use PNL\PNLDocker\PNLDocker;
 use Pnl\PNLDocker\Event\DockerEvent;
+use Pnl\PNLDocker\Event\DockerReadEvent;
 use Pnl\PNLDocker\Event\DockerUpEvent;
 use Pnl\PNLDocker\Services\Docker\DockerContext;
 use Pnl\PNLDocker\Services\VirtualDumper\VirtualDumper;
@@ -21,7 +22,7 @@ class UpdateConfFileSubscriber implements EventSubscriberInterface
     {
         return [
             DockerEvent::UP->value => 'onStart',
-            DockerEvent::UP->value => 'onStart',
+            DockerEvent::READ->value => 'onRead',
         ];
     }
 
@@ -35,7 +36,17 @@ class UpdateConfFileSubscriber implements EventSubscriberInterface
         }
 
         $fullConfig[$event->getPath()] = $event->getContainers();
-        $content = $this->virtualDumper->dump($fullConfig);
+        $this->updateFile($fullConfig);
+    }
+
+    public function onRead(DockerReadEvent $event): void
+    {
+        $this->updateFile($event->getContainers());
+    }
+
+    private function updateFile(array $config): void
+    {
+        $content = $this->virtualDumper->dump($config);
 
         $file = fopen(PNLDocker::getRegistrationFile(), 'w');
 

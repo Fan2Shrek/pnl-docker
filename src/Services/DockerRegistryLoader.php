@@ -10,19 +10,10 @@ class DockerRegistryLoader
     ) {
     }
 
-    public function load(string $path, bool $asConfigBag = false): DockerConfigBag|array
+    public function load(string $path): DockerConfigBag|array
     {
         $registry = require $path;
 
-        if ($asConfigBag) {
-            foreach ($registry as $dir => $dockerConfigs) {
-                $loadedRegistry[$dir] = new DockerConfigBag();
-                foreach ($dockerConfigs as $dockerConfig) {
-                    $loadedRegistry[$dir]->addContainer($dockerConfig);
-                }
-            }
-        }
-
-        return $loadedRegistry;
+        return $registry;
     }
 }

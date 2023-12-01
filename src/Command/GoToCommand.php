@@ -10,7 +10,6 @@ use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
 use Pnl\PNLDocker\Services\DockerRegistryLoader;
 use Pnl\PNLDocker\Services\Docker\Docker;
-use Pnl\PNLDocker\Services\Docker\DockerClient;
 
 class GoToCommand extends AbstractCommand
 {
@@ -20,7 +19,7 @@ class GoToCommand extends AbstractCommand
 
     public function __construct(
         private readonly DockerRegistryLoader $dockerRegistryLoader,
-        private Docker $dockerClient,
+        private Docker $docker,
     ) {
     }
 
@@ -41,7 +40,9 @@ class GoToCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        $this->currentConfig = $this->dockerRegistryLoader->load(PNLDocker::getRegistrationFile(), true);
+        $this->docker->getContainers(true);
+
+        $this->currentConfig = $this->dockerRegistryLoader->load(PNLDocker::getRegistrationFile());
 
         if (!$input->haveNameless()) {
             throw new \Exception('You must provide a project name');
@@ -74,7 +75,6 @@ class GoToCommand extends AbstractCommand
         $output->writeln(sprintf('Going to %s', $dir));
 
         $bag = $this->currentConfig[$dir];
-
         $containers = $bag->getImages($input->get('image'));
 
         if (empty($containers)) {
