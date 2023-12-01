@@ -17,6 +17,10 @@ class ContainerRepository
 
         foreach ($bags as $bag) {
             foreach ($bag->getContainers() as $container) {
+                if (!$container->isRunning()) {
+                    continue;
+                }
+
                 if (array_intersect($publicPort, $container->getPublicPort())) {
                     $containers[] = $container;
                 }

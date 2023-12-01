@@ -51,7 +51,7 @@ class DockerCommand
         switch ($method) {
             case 'force':
                 foreach ($pairsContainer as $container) {
-                    $this->docker->stop($container->getId());
+                    $this->docker->stop($container);
                 }
 
                 if (!$isKnow) {
@@ -64,16 +64,14 @@ class DockerCommand
             case 'smart':
                 die('smart');
 
-                $this->docker->start($bag);
+                $this->docker->up($bag);
                 break;
             case 'shy':
-                return;
-                break;
+                throw new \RuntimeException(sprintf('Couldn\'t start containers with %s method', $method));
             default:
                 throw new \RuntimeException(sprintf('Method %s not supported', $method));
         }
 
-        $this->docker->forceStart($bag->getContainers());
         $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath, $bag->getContainers()), DockerUpEvent::NAME);
     }
 

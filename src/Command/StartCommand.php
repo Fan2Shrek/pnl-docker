@@ -2,12 +2,16 @@
 
 namespace Pnl\PnlDocker\Command;
 
+use Cassandra\Type\Custom;
 use Pnl\App\AbstractCommand;
 use Pnl\Application;
 use Pnl\Console\Input\ArgumentBag;
 use Pnl\Console\Input\ArgumentType;
 use Pnl\Console\Input\InputInterface;
+use Pnl\Console\Output\ANSI\TextColors;
 use Pnl\Console\Output\OutputInterface;
+use Pnl\Console\Output\Style\CustomStyle;
+use Pnl\PNLDocker\EventSubscriber\LogContainerSubsriber;
 use Pnl\PNLDocker\Services\DockerCommand;
 
 class StartCommand extends AbstractCommand
@@ -46,6 +50,16 @@ class StartCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
+        $style = new CustomStyle($output);
+
+        $style->createStyle('green')
+        ->setColor(TextColors::GREEN);
+
+        $style->createStyle('white')
+        ->setColor(TextColors::WHITE);
+
+        LogContainerSubsriber::setStyle($style);
+
         $method = match (true) {
             $input->get('smart') => 'smart',
             $input->get('force') => 'force',

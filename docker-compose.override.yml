@@ -7,3 +7,7 @@ services:
   consumer:
     ports:
       - 1665:9004
+
+  nginx:
+    ports:
+      - 8000:80

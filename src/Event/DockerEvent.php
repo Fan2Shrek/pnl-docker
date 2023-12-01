@@ -9,4 +9,8 @@ enum DockerEvent: string
     case DOWN = 'pnl.docker.down';
 
     case READ = 'pnl.docker.read';
+
+    case START = 'pnl.docker.start';
+
+    case STOP = 'pnl.docker.stop';
 }

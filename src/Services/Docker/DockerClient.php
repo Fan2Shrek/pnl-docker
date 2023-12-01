@@ -2,6 +2,8 @@
 
 namespace Pnl\PNLDocker\Services\Docker;
 
+use Pnl\PNLDocker\Docker\Container;
+
 class DockerClient
 {
     public function request(string $path, string $method = 'GET', array $param = []): string
@@ -33,13 +35,13 @@ class DockerClient
         return json_decode($response, true);
     }
 
-    public function start(string $container): void
+    public function start(Container $container): void
     {
-        $this->request(sprintf('containers/%s/start', $container), 'POST');
+        $this->request(sprintf('containers/%s/start', $container->getId()), 'POST');
     }
 
-    public function stop(string $container): void
+    public function stop(Container $container): void
     {
-        $this->request(sprintf('containers/%s/stop', $container), 'POST');
+        $this->request(sprintf('containers/%s/stop', $container->getId()), 'POST');
     }
 }
