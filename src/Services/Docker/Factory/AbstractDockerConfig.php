@@ -2,14 +2,15 @@
 
 namespace Pnl\PNLDocker\Services\Docker\Factory;
 
-use Pnl\PNLDocker\Docker\DockerConfig;
+use Pnl\PNLDocker\Docker\Container;
 use Pnl\PNLDocker\Docker\DockerConfigBag;
 
 abstract class AbstractDockerConfig implements DockerFactoryInterface
 {
-    public function create(string $containerName, string $image, array $ports = [], bool $isRunning = false): DockerConfig
+    public function create(string $id, string $containerName, string $image, array $ports = [], bool $isRunning = false): Container
     {
-        $dockerConfig = new DockerConfig(
+        $dockerConfig = new Container(
+            $id,
             $containerName,
             $image,
             $ports,

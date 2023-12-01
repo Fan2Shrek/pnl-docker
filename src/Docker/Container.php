@@ -2,14 +2,20 @@
 
 namespace Pnl\PNLDocker\Docker;
 
-class DockerConfig
+class Container
 {
     public function __construct(
+        private string $id,
         private string $containerName,
         private string $image,
         private array $ports,
         private bool $isRunning = false,
     ) {
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getContainerName(): string
@@ -44,5 +50,18 @@ class DockerConfig
                 $this->ports[$containerPort][] = $port;
             }
         }
+    }
+
+    public function getPublicPort(): array
+    {
+        return array_reduce(
+            $this->ports,
+            function (array $carry, array $item) {
+                $carry[] = $item['PublicPort'];
+
+                return $carry;
+            },
+            [],
+        );
     }
 }

@@ -4,7 +4,10 @@ namespace Pnl\PNLDocker\EventSubscriber;
 
 use PNL\PNLDocker\PNLDocker;
 use Pnl\PNLDocker\Event\DockerEvent;
+use Pnl\PNLDocker\Event\DockerReadEvent;
 use Pnl\PNLDocker\Event\DockerUpEvent;
+use Pnl\PNLDocker\Services\DockerRegistryManager;
+use Pnl\PNLDocker\Services\Docker\Docker;
 use Pnl\PNLDocker\Services\Docker\DockerContext;
 use Pnl\PNLDocker\Services\VirtualDumper\VirtualDumper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -12,8 +15,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class UpdateConfFileSubscriber implements EventSubscriberInterface
 {
     public function __construct(
+        private readonly Docker $docker,
         private readonly DockerContext $dockerContext,
         private readonly VirtualDumper $virtualDumper,
+        private readonly DockerRegistryManager $dockerRegistryManager,
     ) {
     }
 
@@ -21,26 +26,17 @@ class UpdateConfFileSubscriber implements EventSubscriberInterface
     {
         return [
             DockerEvent::UP->value => 'onStart',
-            DockerEvent::UP->value => 'onStart',
+            DockerEvent::READ->value => 'onRead',
         ];
     }
 
     public function onStart(DockerUpEvent $event): void
     {
-        $fullConfig = require PNLDocker::getRegistrationFile();
+        $this->dockerRegistryManager->save();
+    }
 
-        // If file is empty
-        if (1 === $fullConfig) {
-            $fullConfig = [];
-        }
-
-        $fullConfig[$event->getPath()] = $event->getContainers();
-        $content = $this->virtualDumper->dump($fullConfig);
-
-        $file = fopen(PNLDocker::getRegistrationFile(), 'w');
-
-        fwrite($file, sprintf("<?php\n\nreturn %s;", $content));
-
-        fclose($file);
+    public function onRead(DockerReadEvent $event): void
+    {
+        $this->dockerRegistryManager->update($event->getContainers());
     }
 }

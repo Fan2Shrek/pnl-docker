@@ -2,7 +2,8 @@
 
 namespace Pnl\PNLDocker\Services\Docker;
 
-use Pnl\PNLDocker\Docker\DockerConfig;
+use Pnl\PNLDocker\Docker\Container;
+use Pnl\PNLDocker\Docker\DockerConfigBag;
 use Pnl\PNLDocker\Services\Docker\Factory\DockerFileConfigFactory;
 use Symfony\Component\Yaml\Yaml;
 
@@ -17,9 +18,9 @@ class DockerContext
     }
 
     /**
-     * @return array<string, DockerConfig>
+     * @return array<string, Container>
      */
-    public function getContainersFrom(string $path): array
+    public function getContainersFrom(string $path): DockerConfigBag
     {
         $dockerFiles = [];
         foreach (new \DirectoryIterator($path) as $fileInfo) {
@@ -38,15 +39,16 @@ class DockerContext
             $dockerFiles[] = $fileInfo->getPathname();
         }
 
-        return $this->readDockerFiles($dockerFiles);
+        return new DockerConfigBag($this->readDockerFiles($dockerFiles));
     }
 
     /**
-     * @return array<string, DockerConfig>
+     * @return array<string, Container>
      */
     private function readDockerFiles(array $dockerFiles): array
     {
         $dockerList = [];
+        rsort($dockerFiles);
 
         foreach ($dockerFiles as $dockerFile) {
             $dockerFileContent = Yaml::parseFile($dockerFile);

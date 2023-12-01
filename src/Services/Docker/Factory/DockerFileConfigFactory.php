@@ -10,6 +10,7 @@ class DockerFileConfigFactory extends AbstractDockerConfig
 
         foreach ($dockerConfigs as $containerName => $dockerConfig) {
             $dockerConfigObjects[$containerName] = $this->create(
+                '',
                 $dockerConfig['name'],
                 $dockerConfig['image'] ?? '',
                 $this->convertPorts($dockerConfig['ports'] ?? [])
