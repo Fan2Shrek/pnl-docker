@@ -14,11 +14,31 @@ class DockerConfigFactory extends AbstractDockerConfig
             $dockerConfigObjects[$dockerConfig['Names'][0]] = $this->create(
                 $dockerConfig['Names'][0],
                 $dockerConfig['Image'] ?? '',
-                $dockerConfig['Ports'],
+                $this->convertPorts($dockerConfig['Ports']),
                 $dockerConfig['State'] === 'running' ? true : false
             );
         }
 
         return $dockerConfigObjects;
+    }
+
+    private function convertPorts(array $ports): array
+    {
+        $convertedPorts = [];
+        $donePort = [];
+
+        foreach ($ports as $port) {
+            if (!isset($port['PublicPort'])) {
+                continue;
+            }
+
+            if (!in_array($port['PublicPort'], $donePort)) {
+                $convertedPorts[] = $port;
+            }
+
+            $donePort[] = $port['PublicPort'];
+        }
+
+        return $convertedPorts;
     }
 }
