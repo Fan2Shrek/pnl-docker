@@ -33,4 +33,12 @@ class DockerConfigBag
             fn (Container $container) => str_contains($container->getImage(), $image)
         );
     }
+
+    public function getStopedContainers(): array
+    {
+        return array_filter(
+            $this->containers,
+            fn (Container $container) => !$container->isRunning()
+        );
+    }
 }
