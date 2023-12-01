@@ -4,6 +4,8 @@ namespace Pnl\PnlDocker\Command;
 
 use Pnl\App\AbstractCommand;
 use Pnl\Application;
+use Pnl\Console\Input\ArgumentBag;
+use Pnl\Console\Input\ArgumentType;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\OutputInterface;
 use Pnl\PNLDocker\Services\DockerCommand;
@@ -28,6 +30,17 @@ class StartCommand extends AbstractCommand
         }
     }
 
+    public static function getArguments(): ArgumentBag
+    {
+        $arg = new ArgumentBag();
+        $arg->add('no-detach', false, 'No detach from the container', ArgumentType::BOOLEAN, false)
+            ->add('force', false, 'Force the start of the container', ArgumentType::BOOLEAN, false)
+            ->add('shy', false, 'Try starting the container without any change', ArgumentType::BOOLEAN, true)
+            ->add('smart', false, 'Try to find new port to start the container', ArgumentType::BOOLEAN, false);
+
+        return $arg;
+    }
+
     public function getDescription(): string
     {
         return 'Starts the PNL Docker application';
@@ -35,6 +48,13 @@ class StartCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        $this->dockerCommand->up($this->currentPath, method: 'force');
+        $method = match (true) {
+            $input->get('shy') => 'shy',
+            $input->get('smart') => 'smart',
+            $input->get('force') => 'force',
+            default => 'shy'
+        };
+
+        $this->dockerCommand->up($this->currentPath, !$input->get('no-detach'), $method);
     }
 }
