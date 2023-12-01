@@ -49,9 +49,9 @@ class StartCommand extends AbstractCommand
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
         $method = match (true) {
-            $input->get('shy') => 'shy',
             $input->get('smart') => 'smart',
             $input->get('force') => 'force',
+            $input->get('shy') => 'shy',
             default => 'shy'
         };
 
