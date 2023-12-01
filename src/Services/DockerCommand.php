@@ -2,6 +2,7 @@
 
 namespace Pnl\PNLDocker\Services;
 
+use Pnl\PNLDocker\Docker\DockerConfigBag;
 use Pnl\PNLDocker\Event\DockerUpEvent;
 use Pnl\PNLDocker\Services\DockerRegistryManager;
 use Pnl\PNLDocker\Services\Docker\Docker;
@@ -17,6 +18,7 @@ class DockerCommand
         private readonly DockerContext $dockerContext,
         private readonly Docker $docker,
         private readonly DockerRegistryManager $dockerRegistryManager,
+        private readonly ContainerRepository $containerRepository,
         ?string $dockerExec = null,
     ) {
         $this->dockerExec = $dockerExec ?? $this->findDockerExec();;
@@ -25,19 +27,67 @@ class DockerCommand
     public function up(string $currentPath, bool $detach = true, string $method = 'shy'): void
     {
         $this->docker->getContainers(true);
+        $isKnow = true;
         $bag = $this->dockerRegistryManager->getBagFrom($currentPath);
+
+        if (null === $bag) {
+            $isKnow = false;
+            $bag = $this->dockerContext->getContainersFrom($currentPath);
+        }
+
+        $pairsContainer = $this->findPairs($bag);
+
+        if (empty($pairsContainer)) {
+            if (!$isKnow) {
+                $this->executeCommand('up', ['detach' => $detach]);
+            } else {
+                $this->docker->up($bag);
+            }
+
+            return;
+        }
 
         switch ($method) {
             case 'force':
-                $this->docker->forceStart($bag->getContainers());
+                foreach ($pairsContainer as $container) {
+                    $this->docker->stop($container->getId());
+                }
+
+                if (!$isKnow) {
+                    $this->executeCommand('up', ['detach' => $detach]);
+                } else {
+                    $this->docker->up($bag);
+                }
+
+                break;
+            case 'smart':
+                die('smart');
+
+                $this->docker->start($bag);
                 break;
             case 'shy':
-                $this->executeCommand('up', ['detach' => $detach]);
+                return;
                 break;
             default:
                 throw new \RuntimeException(sprintf('Method %s not supported', $method));
         }
+
+        $this->docker->forceStart($bag->getContainers());
         $this->eventDispatcher->dispatch(new DockerUpEvent($currentPath, $bag->getContainers()), DockerUpEvent::NAME);
+    }
+
+    private function findPairs(DockerConfigBag $bag): array
+    {
+        $pairs = [];
+        foreach ($bag->getContainers() as $container) {
+            $result = $this->containerRepository->findByPort($container->getPublicPort());
+
+            if (null !== $result) {
+                $pairs = array_merge($pairs, $result);
+            }
+        }
+
+        return $pairs;
     }
 
     private function executeCommand(string $command, array $arg = [], bool $silent = false): void

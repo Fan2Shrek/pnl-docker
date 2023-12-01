@@ -51,4 +51,17 @@ class DockerConfig
             }
         }
     }
+
+    public function getPublicPort(): array
+    {
+        return array_reduce(
+            $this->ports,
+            function (array $carry, array $item) {
+                $carry[] = $item['PublicPort'];
+
+                return $carry;
+            },
+            [],
+        );
+    }
 }

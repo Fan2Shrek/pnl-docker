@@ -37,6 +37,10 @@ class DockerRegistryManager
 
     public function getBagFrom(string $path): ?DockerConfigBag
     {
+        if (!isset($this->get()[$path])) {
+            return null;
+        }
+
         $registry = $this->get()[$path];
 
         return $registry;

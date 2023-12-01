@@ -2,6 +2,7 @@
 
 namespace Pnl\PNLDocker\Services\Docker;
 
+use Pnl\PNLDocker\Docker\DockerConfig;
 use Pnl\PNLDocker\Docker\DockerConfigBag;
 use Pnl\PNLDocker\Event\DockerReadEvent;
 use Pnl\PNLDocker\Services\Docker\Factory\DockerConfigFactory;
@@ -24,6 +25,23 @@ class Docker
              */
             $this->dockerClient->start($container->getId());
         }
+    }
+
+    public function up(DockerConfigBag $dockerConfigBag): void
+    {
+        foreach ($dockerConfigBag->getContainers() as $container) {
+            $this->dockerClient->start($container->getId());
+        }
+    }
+
+    public function start(string $command): void
+    {
+        $this->dockerClient->start($command);
+    }
+
+    public function stop(string $command): void
+    {
+        $this->dockerClient->stop($command);
     }
 
     public function getContainers(bool $asDockerBag = false): array

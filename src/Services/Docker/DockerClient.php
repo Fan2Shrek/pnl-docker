@@ -37,4 +37,9 @@ class DockerClient
     {
         $this->request(sprintf('containers/%s/start', $container), 'POST');
     }
+
+    public function stop(string $container): void
+    {
+        $this->request(sprintf('containers/%s/stop', $container), 'POST');
+    }
 }
