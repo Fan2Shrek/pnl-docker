@@ -36,6 +36,10 @@ class DockerCommand
             $bag = $this->dockerContext->getContainersFrom($currentPath);
         }
 
+        if (empty($bag->getStopedContainers())) {
+            return;
+        }
+
         $pairsContainer = $this->findPairs($bag);
 
         if (empty($pairsContainer)) {

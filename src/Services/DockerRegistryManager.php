@@ -23,6 +23,10 @@ class DockerRegistryManager
     private function load(): DockerConfigBag|array
     {
         if (!$this->isLoaded) {
+            if (!file_exists(self::REGISTRATION_FILE)) {
+                touch(self::REGISTRATION_FILE);
+                $this->save();
+            }
             $this->registry = require self::REGISTRATION_FILE;
             $this->isLoaded = true;
         }
