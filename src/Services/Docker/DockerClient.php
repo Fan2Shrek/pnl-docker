@@ -2,18 +2,24 @@
 
 namespace Pnl\PNLDocker\Services\Docker;
 
+use Pnl\App\SettingsProvider;
 use Pnl\PNLDocker\Docker\Container;
 
 class DockerClient
 {
+    private string $socket;
+
+    public function __construct(SettingsProvider $settingsProvider)
+    {
+        $this->socket = $settingsProvider->get('docker.socket');
+    }
+
     public function request(string $path, string $method = 'GET', array $param = []): string
     {
-        $socket = '/var/run/docker.sock';
-
         set_time_limit(0);
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_UNIX_SOCKET_PATH => $socket,
+            CURLOPT_UNIX_SOCKET_PATH => $this->socket,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_BUFFERSIZE => 256,
             CURLOPT_TIMEOUT => 1000000,
