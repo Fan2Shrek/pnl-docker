@@ -74,4 +74,47 @@ class DockerContext
 
         return $this->dockerFileConfigFactory->createFromArray($dockerList);
     }
+
+    public function dumpDockerConfig(string $path, DockerConfigBag $dockerConfigBag): void
+    {
+        $dockerConfig = [
+            'version' => '3.9',
+            'services' => []
+        ];
+
+        foreach ($dockerConfigBag->getContainers() as $container) {
+            $ports = array_reduce(
+                $container->getPorts(),
+                function (array $carry, array $item) {
+                    $carry[] = sprintf('%s:%s{{ comment }}', $item['PublicPort'], $item['PrivatePort']);
+
+                    return $carry;
+                },
+                []
+            );
+
+            if (str_starts_with($container->getContainerName(), '/')) {
+                $exploded = explode('-', $container->getContainerName());
+                $name = $exploded[2];
+            } else {
+                $name = $container->getContainerName();
+            }
+
+            $dockerConfig['services'][$name] = [
+                'ports' => $ports,
+            ];
+        }
+
+        $override = $path . '/docker-compose.override.yml';
+
+        if (!file_exists($override)) {
+            touch($override);
+        }
+
+        $content = Yaml::dump($dockerConfig, 6, 4, YAML::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
+        $content = str_replace("{{ comment }}'", "' #Managed by pnl", $content);
+        $content = str_replace("services:", "\nservices:", $content);
+
+        file_put_contents($override, $content);
+    }
 }

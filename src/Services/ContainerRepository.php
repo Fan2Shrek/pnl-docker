@@ -21,8 +21,12 @@ class ContainerRepository
                     continue;
                 }
 
-                if (array_intersect($publicPort, $container->getPublicPort())) {
-                    $containers[] = $container;
+                $ports = array_intersect($publicPort, $container->getPublicPort());
+
+                if (!empty($ports)) {
+                    foreach ($ports as $port) {
+                        $containers[$port] = $container;
+                    }
                 }
             }
         }

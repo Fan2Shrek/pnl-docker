@@ -64,4 +64,13 @@ class Container
             [],
         );
     }
+
+    public function changePort(string $oldPort, string $newPort): void
+    {
+        foreach ($this->ports as $key => $port) {
+            if ($oldPort === $port['PublicPort']) {
+                $this->ports[$key]['PublicPort'] = $newPort;
+            }
+        }
+    }
 }

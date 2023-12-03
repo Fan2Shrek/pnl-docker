@@ -32,7 +32,7 @@ class UpdateConfFileSubscriber implements EventSubscriberInterface
 
     public function onStart(DockerUpEvent $event): void
     {
-        $this->dockerRegistryManager->save();
+        $this->dockerRegistryManager->refreshAllContainer();
     }
 
     public function onRead(DockerReadEvent $event): void

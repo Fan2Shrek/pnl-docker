@@ -41,4 +41,15 @@ class DockerConfigBag
             fn (Container $container) => !$container->isRunning()
         );
     }
+
+    public function getContainerByPublicPort(string $port): ?Container
+    {
+        foreach ($this->containers as $container) {
+            if ($container->getPublicPort() === $port) {
+                return $container;
+            }
+        }
+
+        return null;
+    }
 }

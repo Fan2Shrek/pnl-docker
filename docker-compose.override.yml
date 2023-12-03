@@ -1,13 +1,11 @@
+version: '3.9'
+
 services:
-  php:
-    ports:
-      - 1670:9000
-      - 1689:9000
-
-  consumer:
-    ports:
-      - 1665:9004
-
-  nginx:
-    ports:
-      - 8000:80
+    php:
+        ports:
+            - '8616:9000' #Managed by pnl
+    consumer:
+        ports: []
+    nginx:
+        ports:
+            - '8001:80' #Managed by pnl

@@ -2,6 +2,7 @@
 
 namespace Pnl\PNLDocker\Services;
 
+use Pnl\PNLDocker\Docker\Container;
 use Pnl\PNLDocker\Docker\DockerConfigBag;
 use Pnl\PNLDocker\Event\DockerUpEvent;
 use Pnl\PNLDocker\Services\DockerRegistryManager;
@@ -26,8 +27,7 @@ class DockerCommand
 
     public function up(string $currentPath, bool $detach = true, string $method = 'shy'): void
     {
-        /** Refresh all container from registry */
-        $this->docker->getContainers(true);
+        $this->dockerRegistryManager->refreshAllContainer();
         $isKnow = true;
         $bag = $this->dockerRegistryManager->getBagFrom($currentPath);
 
@@ -66,9 +66,10 @@ class DockerCommand
 
                 break;
             case 'smart':
-                die('smart');
+                $smartedBag = $this->doSmart($bag, $pairsContainer);
+                $this->dockerContext->dumpDockerConfig($currentPath, $smartedBag);
 
-                $this->docker->up($bag);
+                $this->executeCommand('up', ['detach' => $detach]);
                 break;
             case 'shy':
                 throw new \RuntimeException(sprintf('Couldn\'t start containers with %s method', $method));
@@ -86,7 +87,7 @@ class DockerCommand
             $result = $this->containerRepository->findByPort($container->getPublicPort());
 
             if (null !== $result) {
-                $pairs = array_merge($pairs, $result);
+                $pairs[$container->getContainerName()] = $result;
             }
         }
 
@@ -135,5 +136,26 @@ class DockerCommand
         }
 
         return $dockerExec;
+    }
+
+    private function doSmart(DockerConfigBag $bag, array $pairs): DockerConfigBag
+    {
+        foreach ($pairs as $containerName => $ports) {
+            $container = $bag->getContainer($containerName);
+            foreach ($ports as $portNumber => $_) {
+                $this->changePort($container, (int) $portNumber);
+            }
+        }
+
+        return $bag;
+    }
+
+    private function changePort(Container $container, int $port): void
+    {
+        $oldPort = $port;
+        do {
+            ++$port;
+        } while (!empty($this->containerRepository->findByPort([$port])));
+        $container->changePort($oldPort, $port);
     }
 }
