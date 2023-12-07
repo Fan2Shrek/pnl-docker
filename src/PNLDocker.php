@@ -1,6 +1,6 @@
 <?php
 
-namespace PNL\PNLDocker;
+namespace Pnl\PNLDocker;
 
 use Pnl\Extensions\AbstractExtension;
 use Pnl\PNLDocker\DependencyInjection\EventSubscriberCompiler;

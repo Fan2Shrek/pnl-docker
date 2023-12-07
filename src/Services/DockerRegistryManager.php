@@ -73,4 +73,9 @@ class DockerRegistryManager
 
         fclose($file);
     }
+
+    public function refreshAllContainer(): void
+    {
+        $this->docker->getContainers(true);
+    }
 }

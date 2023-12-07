@@ -2,7 +2,6 @@
 
 namespace Pnl\PnlDocker\Command;
 
-use Cassandra\Type\Custom;
 use Pnl\App\AbstractCommand;
 use Pnl\Application;
 use Pnl\Console\Input\ArgumentBag;
