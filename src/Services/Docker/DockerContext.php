@@ -61,7 +61,7 @@ class DockerContext
                 if (!isset($dockerList[$containerName])) {
                     $dockerList[$containerName] = [
                         'name' => $containerName,
-                        'image' => $container['image'],
+                        'image' => $container['image'] ?? 'unknow',
                         'ports' => $container['ports'] ?? []
                     ];
                 } else {
@@ -105,10 +105,15 @@ class DockerContext
             ];
         }
 
-        $override = $path . '/docker-compose.override.yml';
+        $overrideYml = $path . '/docker-compose.override.yml';
+        $overrideYaml = $path . '/docker-compose.override.yaml';
 
-        if (!file_exists($override)) {
-            touch($override);
+        if (!file_exists($overrideYml) && !file_exists($overrideYaml)) {
+            touch($overrideYml);
+        } elseif (file_exists($overrideYaml)) {
+            $override = $overrideYaml;
+        } else {
+            $override = $overrideYml;
         }
 
         $content = Yaml::dump($dockerConfig, 6, 4, YAML::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
