@@ -54,8 +54,10 @@ class DockerCommand
 
         switch ($method) {
             case 'force':
-                foreach ($pairsContainer as $container) {
-                    $this->docker->stop($container);
+                foreach ($pairsContainer as $port) {
+                    foreach ($port as $container) {
+                        $this->docker->stop($container);
+                    }
                 }
 
                 if (!$isKnow) {
