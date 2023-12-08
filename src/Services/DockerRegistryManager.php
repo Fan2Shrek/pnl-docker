@@ -34,8 +34,12 @@ class DockerRegistryManager
         return $this->registry;
     }
 
-    public function get(): array
+    public function get(bool $fresh = false): array
     {
+        if ($fresh) {
+            $this->refreshAllContainer();
+        }
+
         return $this->load();
     }
 

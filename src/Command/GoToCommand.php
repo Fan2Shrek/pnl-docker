@@ -40,7 +40,7 @@ class GoToCommand extends AbstractCommand
 
     public function __invoke(InputInterface $input, OutputInterface $output): void
     {
-        $this->currentConfig = $this->dockerRegistryLoader->get();
+        $this->currentConfig = $this->dockerRegistryLoader->get(true);
 
         if (!$input->haveNameless()) {
             throw new \Exception('You must provide a project name');
