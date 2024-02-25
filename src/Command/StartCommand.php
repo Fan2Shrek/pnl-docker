@@ -44,7 +44,7 @@ class StartCommand extends AbstractCommand
 
     public function getDescription(): string
     {
-        return 'Starts the PNL Docker application';
+        return 'Starts all container from a project';
     }
 
     public function __invoke(InputInterface $input, OutputInterface $output): void

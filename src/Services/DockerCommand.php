@@ -4,6 +4,7 @@ namespace Pnl\PNLDocker\Services;
 
 use Pnl\PNLDocker\Docker\Container;
 use Pnl\PNLDocker\Docker\DockerConfigBag;
+use Pnl\PNLDocker\Event\DockerDownEvent;
 use Pnl\PNLDocker\Event\DockerUpEvent;
 use Pnl\PNLDocker\Services\DockerRegistryManager;
 use Pnl\PNLDocker\Services\Docker\Docker;
@@ -23,6 +24,19 @@ class DockerCommand
         ?string $dockerExec = null,
     ) {
         $this->dockerExec = $dockerExec ?? $this->findDockerExec();;
+    }
+
+    public function down(string $projectName): void
+    {
+        $registry = $this->dockerRegistryManager->get(true);
+
+        foreach ($registry as $path => $bag) {
+            if (str_ends_with($path, $projectName)) {
+                $this->executeCommand('down', path: $path);
+                $this->dockerRegistryManager->refreshAllContainer();
+                $this->eventDispatcher->dispatch(new DockerDownEvent($path, $bag->getContainers()), DockerDownEvent::NAME);
+            }
+        }
     }
 
     public function up(string $currentPath, bool $detach = true, string $method = 'shy'): void
@@ -96,10 +110,11 @@ class DockerCommand
         return $pairs;
     }
 
-    private function executeCommand(string $command, array $arg = [], bool $silent = false): void
+    private function executeCommand(string $command, array $arg = [], bool $silent = false, string $path = './'): void
     {
         $realCommand = sprintf(
-            '%s \'%s\' %s %s %s',
+            'cd %s && %s \'%s\' %s %s %s',
+            $path,
             $silent ? 'nohup' : '',
             $this->dockerExec,
             $command,
