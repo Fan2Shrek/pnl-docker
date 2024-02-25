@@ -3,6 +3,7 @@
 namespace Pnl\PNLDocker\Command;
 
 use Pnl\App\AbstractCommand;
+use Pnl\Console\Input\ArgumentBag;
 use Pnl\Console\Input\InputInterface;
 use Pnl\Console\Output\ANSI\TextColors;
 use Pnl\Console\Output\OutputInterface;
@@ -38,12 +39,14 @@ class ListCommand extends AbstractCommand
         $style->createStyle('image')
             ->setColor(TextColors::BLUE);
 
+        $style->createStyle('running image')
+        ->setColor(TextColors::YELLOW);
+
         $this->style = $style;
 
         foreach ($registry as $path => $bag) {
             $this->printBag($path, $bag);
         }
-        // dd($registry);
     }
 
     private function printBag(string $path, DockerConfigBag $bag): void
@@ -53,7 +56,7 @@ class ListCommand extends AbstractCommand
         $this->style->writeWithStyle(sprintf("%s: \n", end($folder)), 'path');
 
         foreach ($bag->getContainers() as $container) {
-            $this->style->writeWithStyle(sprintf("\t - %s\n", $container->getImage()), 'image');
+            $this->style->writeWithStyle(sprintf("\t - %s\n", $container->getImage()), $container->isRunning() ? 'running image' : 'image');
         }
     }
 }
